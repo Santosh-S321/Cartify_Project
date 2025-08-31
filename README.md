@@ -26,6 +26,7 @@ Cartify is a modern e-commerce shopping cart application built with React + Vite
  ├── vite.config.js       # Vite config  
  └── README.md  
 
+###
 
 1. Clone the repo  
 
