@@ -1,8 +1,8 @@
-Cartify
+# Cartify
 
 Cartify is a modern e-commerce shopping cart application built with React + Vite. It provides a smooth shopping experience where users can browse products, add items to the cart, and manage purchases with ease.
 
-Tech Stack
+# Tech Stack
 
 Frontend: React (with Vite)
 
@@ -13,7 +13,7 @@ Styling: Tailwind CSS
 Routing: React Router
 
 
-Project Structure
+# Project Structure
 
 Cartify/
 ├── src/
