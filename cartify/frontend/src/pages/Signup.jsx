@@ -1,96 +1,150 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import "./Auth.css";
 
-export default function Signup() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("user"); // Default role is user
+function Signup() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "user",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { signup } = useAuth();
   const navigate = useNavigate();
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    // Validation
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
       return;
     }
 
-    try {
-      // Send signup data to backend
-      const res = await axios.post("http://localhost:5000/signup", {
-        name,
-        email,
-        password,
-        role,
-      });
-
-      const user = res.data;
-
-      // Save user info in localStorage
-      localStorage.setItem("user", JSON.stringify(user));
-
-      // Redirect based on role
-      if (user.role === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/profile");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Signup failed. Try again.");
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
     }
+
+    setLoading(true);
+
+    const result = await signup(
+      formData.name,
+      formData.email,
+      formData.password,
+      formData.role
+    );
+
+    if (result.success) {
+      navigate("/");
+    } else {
+      setError(result.message);
+    }
+
+    setLoading(false);
   };
 
   return (
-    <div className="signup-page">
-      <h2>Create an Account</h2>
-      <form onSubmit={handleSignup} className="signup-form">
-        <input
-          type="text"
-          placeholder="Full Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-        />
+    <div className="auth-page">
+      <div className="auth-container">
+        <div className="auth-card">
+          <h2 className="auth-title">Create Account</h2>
+          <p className="auth-subtitle">Join Cartify today</p>
 
-        {/* Role Selection */}
-        <label style={{ marginTop: "10px", fontWeight: "bold" }}>Select Role:</label>
-        <select
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          className="border p-2 rounded"
-          required
-        >
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-        </select>
+          {error && <div className="error-message">{error}</div>}
 
-        <button type="submit" style={{ marginTop: "15px" }}>Sign Up</button>
-      </form>
+          <form onSubmit={handleSubmit} className="auth-form">
+            <div className="form-group">
+              <label htmlFor="name">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                placeholder="John Doe"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                placeholder="your@email.com"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                placeholder="••••••••"
+                minLength="6"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                placeholder="••••••••"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="role">Account Type</label>
+              <select
+                id="role"
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+              >
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+
+            <button type="submit" className="auth-btn" disabled={loading}>
+              {loading ? "Creating account..." : "Sign Up"}
+            </button>
+          </form>
+
+          <p className="auth-footer">
+            Already have an account?{" "}
+            <Link to="/login" className="auth-link">
+              Login here
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
+
+export default Signup;

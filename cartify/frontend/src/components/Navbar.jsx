@@ -1,125 +1,91 @@
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import "./Navbar.css";
 
 function Navbar() {
-  const { cart } = useCart();
-  const cartCount = cart.length;
-
+  const { getItemsCount } = useCart();
+  const { user, logout, isAdmin } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
-  // Check if token exists in localStorage
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
-  }, []);
-
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
-    navigate("/login");
+    logout();
+    setMenuOpen(false);
+    navigate("/");
   };
 
+  const closeMenu = () => setMenuOpen(false);
+
   return (
-    <nav style={{ backgroundColor: "#3708f1", padding: "15px 0", position: "relative" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          width: "90%",
-          maxWidth: "1200px",
-          margin: "0 auto",
-        }}
-      >
+    <nav className="navbar">
+      <div className="navbar-container">
         {/* Logo */}
-        <h2 style={{ color: "white", fontSize: "30px", margin: 0 }}>
-          <Link to="/" style={{ color: "white", textDecoration: "none" }}>
-            Cartify
-          </Link>
-        </h2>
+        <Link to="/" className="navbar-logo" onClick={closeMenu}>
+          <span className="logo-icon">🛒</span>
+          Cartify
+        </Link>
 
-        {/* Hamburger Icon */}
-        <div
-          style={{
-            display: "none",
-            flexDirection: "column",
-            cursor: "pointer",
-          }}
-          className="menu-icon"
+        {/* Hamburger Menu */}
+        <button
+          className={`hamburger ${menuOpen ? "active" : ""}`}
           onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
         >
-          <div style={{ width: "25px", height: "3px", background: "white", margin: "4px 0" }} />
-          <div style={{ width: "25px", height: "3px", background: "white", margin: "4px 0" }} />
-          <div style={{ width: "25px", height: "3px", background: "white", margin: "4px 0" }} />
-        </div>
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
 
-        {/* Desktop Links */}
-        <div
-          className="menu-links desktop-links"
-          style={{ display: "flex", gap: "20px", fontSize: "18px" }}
-        >
-          <Link to="/">Home</Link>
-          <Link to="/shop">Shop</Link>
-          {!isLoggedIn && <Link to="/login">Log in</Link>}
-          {!isLoggedIn && <Link to="/signup">Sign Up</Link>}
-          {isLoggedIn && <Link to="/profile">Profile</Link>}
-          {isLoggedIn && <Link to="/admin">Admin</Link>}
-          {isLoggedIn && (
-            <button onClick={handleLogout} className="text-white font-bold">
-              Logout
-            </button>
+        {/* Navigation Links */}
+        <div className={`nav-links ${menuOpen ? "active" : ""}`}>
+          <Link to="/" className="nav-link" onClick={closeMenu}>
+            Home
+          </Link>
+          <Link to="/shop" className="nav-link" onClick={closeMenu}>
+            Shop
+          </Link>
+
+          {/* User Menu */}
+          {user ? (
+            <>
+              <Link to="/profile" className="nav-link" onClick={closeMenu}>
+                Profile
+              </Link>
+              <Link to="/orders" className="nav-link" onClick={closeMenu}>
+                My Orders
+              </Link>
+              {isAdmin() && (
+                <Link to="/admin" className="nav-link admin-link" onClick={closeMenu}>
+                  Admin
+                </Link>
+              )}
+              <button className="nav-link logout-btn" onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="nav-link" onClick={closeMenu}>
+                Login
+              </Link>
+              <Link to="/signup" className="nav-link signup-link" onClick={closeMenu}>
+                Sign Up
+              </Link>
+            </>
           )}
-          <Link to="/cart">Cart ({cartCount})</Link>
+
+          {/* Cart */}
+          <Link to="/cart" className="nav-link cart-link" onClick={closeMenu}>
+            <span className="cart-icon">🛒</span>
+            Cart
+            {getItemsCount() > 0 && (
+              <span className="cart-badge">{getItemsCount()}</span>
+            )}
+          </Link>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      <div className={`mobile-menu ${menuOpen ? "active" : ""}`}>
-        <Link to="/" onClick={() => setMenuOpen(false)}>Home</Link>
-        <Link to="/shop" onClick={() => setMenuOpen(false)}>Shop</Link>
-        {!isLoggedIn && <Link to="/login" onClick={() => setMenuOpen(false)}>Log in</Link>}
-        {!isLoggedIn && <Link to="/signup" onClick={() => setMenuOpen(false)}>Sign Up</Link>}
-        {isLoggedIn && <Link to="/profile" onClick={() => setMenuOpen(false)}>Profile</Link>}
-        {isLoggedIn && <Link to="/admin" onClick={() => setMenuOpen(false)}>Admin</Link>}
-        {isLoggedIn && <button onClick={handleLogout} className="text-white text-left">Logout</button>}
-        <Link to="/cart" onClick={() => setMenuOpen(false)}>Cart ({cartCount})</Link>
-      </div>
-
-      <style>
-        {`
-          .desktop-links { display: flex; }
-          .mobile-menu { display: none; }
-
-          @media (max-width: 768px) {
-            .desktop-links { display: none !important; }
-            .menu-icon { display: flex !important; }
-            .mobile-menu {
-              display: none;
-              flex-direction: column;
-              background: #3708f1;
-              position: absolute;
-              top: 60px;
-              right: 0;
-              width: 200px;
-              padding: 15px;
-              gap: 15px;
-            }
-            .mobile-menu a, .mobile-menu button {
-              color: white;
-              text-decoration: none;
-              font-size: 18px;
-              background: none;
-              border: none;
-              cursor: pointer;
-              text-align: left;
-            }
-            .mobile-menu.active { display: flex; }
-          }
-        `}
-      </style>
     </nav>
   );
 }
