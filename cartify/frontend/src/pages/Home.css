@@ -262,3 +262,38 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.personalized-section,
+.recently-viewed-section,
+.trending-section {
+    /* Uses the same padding/width as categories and features for visual consistency */
+    padding: 5rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-container {
+    /* Ensures content inside the section is centered if needed */
+    width: 100%;
+}
+
+.section-title {
+    /* Inherited from existing style, but ensuring margin below it */
+    margin-bottom: 0.5rem; 
+}
+
+/* Style for the subtitle under the main section title */
+.section-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    text-align: center;
+    margin-bottom: 2.5rem; /* Space before the product grid starts */
+}
+
+/* Ensures the personalized product grids follow the standard column layout */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}

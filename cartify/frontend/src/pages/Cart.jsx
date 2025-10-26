@@ -38,8 +38,8 @@ function Cart() {
         <div className="cart-content">
           {/* Cart Items */}
           <div className="cart-items">
-            {cart.map((item) => (
-              <div key={item.id} className="cart-item">
+            {cart.map((item, index) => (
+              <div key={item.id || `cart-item-${index}`} className="cart-item">
                 <img
                   src={item.image || "https://via.placeholder.com/100"}
                   alt={item.name}

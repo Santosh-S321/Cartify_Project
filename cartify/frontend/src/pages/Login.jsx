@@ -82,11 +82,7 @@ function Login() {
             </Link>
           </p>
 
-          <div className="demo-credentials">
-            <p><strong>Demo Accounts:</strong></p>
-            <p>Admin: admin@cartify.com / admin123</p>
-            <p>User: user@cartify.com / user123</p>
-          </div>
+
         </div>
       </div>
     </div>

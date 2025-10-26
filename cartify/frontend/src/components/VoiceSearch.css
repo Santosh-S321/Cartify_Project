@@ -1,0 +1,49 @@
+.voice-search-btn {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.voice-search-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.voice-search-btn.listening {
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(244, 67, 54, 0.7);
+  animation: pulse-red 1.5s infinite;
+}
+
+.voice-search-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+@keyframes pulse-red {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(244, 67, 54, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
+}
+
+@media (max-width: 768px) {
+  .voice-search-btn {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    margin-left: 0;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+}

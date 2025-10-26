@@ -1,8 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
+import ProductCard from "../components/ProductCard";
+import RecommendedProducts from "../components/RecommendedProducts";
 import "./Home.css";
 
-function Home() {
+function PersonalizedHome() {
+  const { user } = useAuth();
+  const [personalizedData, setPersonalizedData] = useState({
+    recommendations: [],
+    trending: [],
+    recentlyViewed: [],
+    categorySuggestions: []
+  });
+  const [loading, setLoading] = useState(true);
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+  useEffect(() => {
+    fetchPersonalizedContent();
+  }, [user]);
+
+  const fetchPersonalizedContent = async () => {
+    try {
+      setLoading(true);
+      const params = user ? `?userId=${user._id}` : '';
+      const response = await axios.get(`${API_URL}/personalized/home${params}`);
+      setPersonalizedData(response.data);
+    } catch (error) {
+      console.error("Error fetching personalized content:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const categories = [
     { name: "Electronics", icon: "💻", color: "#667eea" },
     { name: "Fashion", icon: "👕", color: "#f093fb" },
@@ -39,19 +71,23 @@ function Home() {
         <div className="hero-content">
           <div className="hero-text">
             <h1 className="hero-title">
-              Welcome to <span className="gradient-text">Cartify</span>
+              {user ? `Welcome back, ${user.name}! 👋` : 'Welcome to'} 
+              {!user && <span className="gradient-text"> Cartify</span>}
             </h1>
             <p className="hero-description">
-              Discover amazing products from electronics, fashion, home essentials, and more.
-              Shop smarter with the best deals online!
+              {user 
+                ? 'We have personalized recommendations just for you based on your shopping preferences!' 
+                : 'Discover amazing products from electronics, fashion, home essentials, and more. Shop smarter with the best deals online!'}
             </p>
             <div className="hero-buttons">
               <Link to="/shop" className="btn btn-primary">
                 Shop Now
               </Link>
-              <Link to="/signup" className="btn btn-secondary">
-                Sign Up Free
-              </Link>
+              {!user && (
+                <Link to="/signup" className="btn btn-secondary">
+                  Sign Up Free
+                </Link>
+              )}
             </div>
           </div>
           <div className="hero-image">
@@ -62,7 +98,52 @@ function Home() {
         </div>
       </section>
 
-      {/* Categories Section */}
+      {/* Personalized Recommendations (Only for logged-in users) */}
+      {user && !loading && personalizedData.recommendations.length > 0 && (
+        <section className="personalized-section">
+          <div className="section-container">
+            <h2 className="section-title">✨ Picked Just for You</h2>
+            <p className="section-subtitle">Based on your browsing and purchase history</p>
+            <div className="products-grid">
+              {personalizedData.recommendations.map((product) => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Recently Viewed (Only for logged-in users) */}
+      {user && personalizedData.recentlyViewed.length > 0 && (
+        <section className="recently-viewed-section">
+          <div className="section-container">
+            <h2 className="section-title">👀 Continue Browsing</h2>
+            <p className="section-subtitle">Pick up where you left off</p>
+            <div className="products-grid">
+              {personalizedData.recentlyViewed.map((product) => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Trending Products */}
+      {personalizedData.trending.length > 0 && (
+        <section className="trending-section">
+          <div className="section-container">
+            <h2 className="section-title">🔥 Trending Now</h2>
+            <p className="section-subtitle">Popular products among our shoppers</p>
+            <div className="products-grid">
+              {personalizedData.trending.map((product) => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Shop by Category */}
       <section className="categories-section">
         <h2 className="section-title">Shop by Category</h2>
         <div className="categories-grid">
@@ -110,4 +191,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default PersonalizedHome;

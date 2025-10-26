@@ -1,0 +1,21 @@
+{
+  "short_name": "Cartify",
+  "name": "Cartify - E-Commerce Platform",
+  "description": "Shop smarter with Cartify - Your one-stop e-commerce platform",
+  "icons": [
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#667eea",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "categories": ["shopping", "ecommerce"],
+  "prefer_related_applications": false
+}

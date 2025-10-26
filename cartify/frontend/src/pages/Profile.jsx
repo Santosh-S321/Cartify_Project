@@ -2,6 +2,7 @@ import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import "./Profile.css";
+import PushNotifications from "../components/PushNotifications";
 
 function Profile() {
   const { user } = useAuth();
@@ -59,6 +60,12 @@ function Profile() {
             <h3>Account Status</h3>
             <p className="active-status">✓ Active</p>
           </div>
+        </div>
+
+        {/* ✅ Add push notifications control here */}
+        <div className="notification-settings">
+          <h2>🔔 Notifications</h2>
+          <PushNotifications />
         </div>
       </div>
     </div>

@@ -2,14 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import RecommendedProducts from '../components/RecommendedProducts';
 
 function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
+  const { user } = useAuth();
 
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
   useEffect(() => {
     fetchProduct();
@@ -81,6 +84,16 @@ function ProductDetail() {
           </button>
         </div>
       </div>
+
+      {/* Recommended Products Section */}
+      {product && (
+        <RecommendedProducts 
+        currentProductId={product._id}
+        category={product.category}
+        userId={user?._id}
+        />
+        )
+      }
     </div>
   );
 }
